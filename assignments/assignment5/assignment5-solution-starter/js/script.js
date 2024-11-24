@@ -1,5 +1,4 @@
 $(function () { 
-  // Событие blur для скрытия навигационного меню на малых экранах
   $("#navbarToggle").blur(function (event) {
     var screenWidth = window.innerWidth;
     if (screenWidth < 768) {
@@ -15,25 +14,23 @@ $(function () {
   var allCategoriesUrl = "https://coursera-jhu-default-rtdb.firebaseio.com/categories.json";
   var menuItemsUrl = "https://coursera-jhu-default-rtdb.firebaseio.com/menu_items/";
 
-  // Вставка HTML в указанный элемент
   var insertHtml = function (selector, html) {
     var targetElem = document.querySelector(selector);
     targetElem.innerHTML = html;
   };
 
-  // Показ иконки загрузки
   var showLoading = function (selector) {
     var html = "<div class='text-center'><img src='images/ajax-loader.gif'></div>";
     insertHtml(selector, html);
   };
 
-  // Замена {{propName}} на propValue в строке
+
   var insertProperty = function (string, propName, propValue) {
     var propToReplace = "{{" + propName + "}}";
     return string.replace(new RegExp(propToReplace, "g"), propValue);
   };
 
-  // Смена активной кнопки меню
+ 
   var switchMenuToActive = function () {
     var classes = document.querySelector("#navHomeButton").className;
     classes = classes.replace(new RegExp("active", "g"), "");
@@ -46,45 +43,44 @@ $(function () {
     }
   };
 
-  // При загрузке страницы
+ 
   document.addEventListener("DOMContentLoaded", function (event) {
     showLoading("#main-content");
     $ajaxUtils.sendGetRequest(
       allCategoriesUrl,
       buildAndShowHomeHTML,
-      true // JSON формат
+      true
     );
   });
 
-  // Построение и показ главной страницы
+  
   function buildAndShowHomeHTML(categories) {
     $ajaxUtils.sendGetRequest(
       homeHtmlUrl,
       function (homeHtml) {
-        // Выбор случайной категории
+  
         var chosenCategory = chooseRandomCategory(categories);
         var chosenCategoryShortName = chosenCategory.short_name;
 
-        // Замена {{randomCategoryShortName}} в HTML
+  
         var homeHtmlToInsertIntoMainPage = insertProperty(
           homeHtml,
           "randomCategoryShortName",
-          "'" + chosenCategoryShortName + "'" // Добавляем кавычки для корректного синтаксиса
+          "'" + chosenCategoryShortName + "'" 
         );
 
         insertHtml("#main-content", homeHtmlToInsertIntoMainPage);
       },
-      false // Получаем HTML, а не JSON
+      false 
     );
   }
 
-  // Выбор случайной категории
+  
   function chooseRandomCategory(categories) {
     var randomArrayIndex = Math.floor(Math.random() * categories.length);
     return categories[randomArrayIndex];
   }
 
-  // Построение и показ HTML для страницы категорий
   function buildAndShowCategoriesHTML(categories) {
     var categoriesTitleHtml = "snippets/categories-title-snippet.html";
     var categoryHtml = "snippets/category-snippet.html";
@@ -107,7 +103,7 @@ $(function () {
     );
   }
 
-  // Построение HTML для отображения категорий
+  
   function buildCategoriesViewHtml(categories, categoriesTitleHtml, categoryHtml) {
     var finalHtml = categoriesTitleHtml;
     finalHtml += "<section class='row'>";
@@ -127,7 +123,7 @@ $(function () {
     return finalHtml;
   }
 
-  // Функция для загрузки категорий
+  
   dc.loadMenuCategories = function () {
     showLoading("#main-content");
     $ajaxUtils.sendGetRequest(
@@ -136,7 +132,7 @@ $(function () {
     );
   };
 
-  // Функция для загрузки пунктов меню
+
   dc.loadMenuItems = function (categoryShort) {
     showLoading("#main-content");
     $ajaxUtils.sendGetRequest(
@@ -145,7 +141,6 @@ $(function () {
     );
   };
 
-  // Построение и показ пунктов меню
   function buildAndShowMenuItemsHTML(categoryMenuItems) {
     var menuItemsTitleHtml = "snippets/menu-items-title.html";
     var menuItemHtml = "snippets/menu-item.html";
@@ -173,7 +168,6 @@ $(function () {
     );
   }
 
-  // Построение HTML для отображения пунктов меню
   function buildMenuItemsViewHtml(categoryMenuItems, menuItemsTitleHtml, menuItemHtml) {
     menuItemsTitleHtml = insertProperty(menuItemsTitleHtml, "name", categoryMenuItems.category.name);
     menuItemsTitleHtml = insertProperty(menuItemsTitleHtml, "special_instructions", categoryMenuItems.category.special_instructions);
